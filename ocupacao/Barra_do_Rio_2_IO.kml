@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="Barra_do_Rio_2_IO" id="Barra_do_Rio_2_IO">
+	<SimpleField name="destinacao" type="string"></SimpleField>
+	<SimpleField name="rip" type="string"></SimpleField>
+	<SimpleField name="interessado" type="string"></SimpleField>
+	<SimpleField name="area" type="float"></SimpleField>
+	<SimpleField name="area_uniao" type="float"></SimpleField>
+	<SimpleField name="nup" type="string"></SimpleField>
+	<SimpleField name="concedida" type="int"></SimpleField>
+</Schema>
+<Folder><name>Barra_do_Rio_2_IO</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#Barra_do_Rio_2_IO">
+		<SimpleData name="destinacao">ocupacao</SimpleData>
+		<SimpleData name="rip">8161.0100364-92</SimpleData>
+		<SimpleData name="interessado">Barra do Rio Terminal Portuário S.A.</SimpleData>
+		<SimpleData name="area">22107.64468503</SimpleData>
+		<SimpleData name="area_uniao">22107.64468503</SimpleData>
+		<SimpleData name="nup">04972.010835/2018-79</SimpleData>
+		<SimpleData name="concedida">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-48.6735240192206,-26.8849188590628 -48.6732268975728,-26.8852104081731 -48.6726598626512,-26.8847430699426 -48.6725683122747,-26.8847604986884 -48.6698179879521,-26.8825181618033 -48.669855201801,-26.8824825396092 -48.6698562074222,-26.8824328909518 -48.6699079783302,-26.8824754048908 -48.6704357756889,-26.8823737796863 -48.6735240192206,-26.8849188590628</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+</Folder>
+</Document></kml>

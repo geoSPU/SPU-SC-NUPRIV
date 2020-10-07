@@ -1,0 +1,128 @@
+---
+title: "Inscrição de Ocupação"
+subtitle: |
+  BARRA DO RIO TERMINAL PORTUÁRIO S.A.  
+  04972.010836/2018-13  
+author: "Luiz Fernando Palin Droubi"
+date: \today
+output: 
+  binb::metropolis:
+    df_print: tibble
+header-includes:
+ \usepackage[brazil]{babel}
+ \usepackage{booktabs}
+ \usepackage{longtable}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align = "center", out.width = "100%", 
+                      warning = FALSE, message = FALSE, dpi = 600)
+
+knitr::knit_hooks$set(mysize = function(before, options, envir) {
+  if (before) 
+    return(options$size)
+})
+
+library(sf)
+library(leaflet)
+library(leafem)
+library(lwgeom)
+library(raster)
+library(knitr)
+library(kableExtra)
+library(appraiseR)
+library(units)
+install_symbolic_unit(name = "Reais", warn = TRUE, dimensionless = TRUE)
+#library(measurements)
+library(geosphere)
+library(textreadr)
+library(stringr)
+```
+
+
+```{r}
+
+coords <- matrix(c(731105.9110, 7024312.8790, # V1
+                   731051.4322, 7024372.0320, # V2
+                   731038.5503, 7024386.1811, # V6
+                   731243.5099, 7024466.4177, # V7
+                   731283.0277, 7024466.5840, # V8
+                   731258.0617, 7024443.7220, # V3
+                   731155.5681, 7024349.8761, # V4
+                   731151.2913, 7024354.6361, # V5
+                   731105.9110, 7024312.8790),# V1
+                 ncol = 2, byrow = TRUE)
+
+spl <- st_sf(geom = st_sfc(st_polygon(list(coords))),
+                        crs = 31982) %>% 
+  st_transform(crs = 4326)
+#
+# 4. Criação dos atributos  
+#
+attr <- data.frame(
+  destinacao = "ocupacao",
+  rip = "8161.0100103-45",
+  interessado = "Barra do Rio Terminal Portuário S.A.",
+  area = st_area(spl),
+  area_uniao = st_area(spl),
+  nup = "04972.010836/2018-13",
+  concedida = TRUE)
+spl_df <- st_sf(attr,
+                geometry = st_geometry(spl))
+```
+
+```{r, include=FALSE}
+lpm_hom <- st_read("../linhas/LPM_HOMOLOGADA.geojson")
+lltm_hom <- st_read("../linhas/LLTM_HOMOLOGADA.geojson")
+lpm_dem <- st_read("../linhas/LPM_DEMARCADA.geojson")
+lltm_dem <- st_read("../linhas/LLTM_DEMARCADA.geojson")
+lpm_pres <- st_read("../linhas/LPM_PRESUMIDA.geojson")
+lltm_pres <- st_read("../linhas/LLTM_PRESUMIDA.geojson")
+cessoes <- st_read("../cessoes.geojson")
+```
+
+## Poligonal em análise -- ortofotos SIG-SC
+
+```{r}
+ext <- extent(spl_df)
+m <- spl_df %>%
+  leaflet() %>%
+  addWMSTiles(baseUrl = "http://sigsc.sc.gov.br/sigserver/SIGSC/wms",
+              layers = list("OrtoRGB-Landsat-2012")) %>%
+  addPolygons(color = "red", group = "Inscrição de Ocupação") %>%
+  addPolygons(data = cessoes, color = "yellow", group = "Cessões") %>% 
+#  addPolygons(data = porto_sfs, color = "yellow", group = "Porto de SFS") %>% 
+  addPolylines(data = lpm_hom, color = "blue") %>% 
+  addPolylines(data = lltm_hom, color = "red") %>% 
+  addPolylines(data = lpm_dem, color = "blue", dashArray = "10 10") %>% 
+  addPolylines(data = lltm_dem, color = "red", dashArray = "10 10") %>% 
+  addLegend(labels = "Inscrições de Ocupação", colors = "red", group = "Inscrições de Ocupação",
+              position = "topright") %>% 
+  addLegend(labels = "Cessões", colors = "red", group = "Cessões",
+              position = "topright") %>% 
+  fitBounds(lng1 = ext[1], lat1 = ext[3], lng2 = ext[2], lat2 = ext[4]) %>% 
+  addMouseCoordinates() %>%
+  addLogo("../SPU.jpg", src = "local", position = "bottomleft", 
+                  offset.x = 15, offset.y = 15, 
+                  width = 75, height = 75)
+name <- paste(st_geohash(spl_df, 10), "_Barra_do_Rio.png", sep = "")
+mapview::mapshot(m, file = name, remove_url = FALSE)
+knitr::include_graphics(name)
+```
+
+## Metadados
+
+```{r, mysize=TRUE, size='\\tiny'}
+kable(t(st_drop_geometry(spl_df)), digits = 2, booktabs = TRUE,
+      format.args = list(big.mark = ".", decimal.mark = ",")) 
+```
+
+
+## Escrever no disco
+
+```{r, echo = TRUE, mysize=TRUE, size='\\scriptsize'}
+#
+# 6. Escrever a nova entrada no BDE
+#
+st_write(spl_df, "Barra_do_Rio_IO.geojson", delete_dsn = TRUE)
+```

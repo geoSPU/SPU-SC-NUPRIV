@@ -1,0 +1,153 @@
+---
+title: "Inscrição de Ocupação"
+subtitle: |
+  COAMO    
+  10154.149569/2020-24  
+author: "Luiz Fernando Palin Droubi"
+date: \today
+institute: Superintendência do Patrimônio da União em Santa Catarina - SPU/SC
+output: 
+  binb::metropolis:
+    df_print: tibble
+header-includes:
+ \usepackage[brazil]{babel}
+ \usepackage{booktabs}
+ \usepackage{longtable}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(sf)
+library(leaflet)
+library(leafem)
+library(raster)
+library(geosphere)
+```
+
+
+```{r}
+# 1. Digitação da Geometria
+#  
+# Digitar Coordenadas dos vértices
+#
+coords <- matrix(data = c(740761.10, 7102414.30, #MC01
+                          740807.87, 7102437.13, #MC02
+                          740905.52, 7102495.90, #AP01
+                          740987.23, 7102569.28, #AP02
+                          741031.35, 7102625.25, #AP03
+                          740989.29, 7102656.93, #AP04
+                          740900.00, 7102574.35, #AP05
+                          740529.90, 7102831.29, #AP06
+                          740310.92, 7102988.83, #AP07
+                          739787.39, 7103366.96, #AP08
+                          739299.85, 7103719.95, #AP09
+                          738909.81, 7104010.95, #AP10
+                          738856.19, 7103938.23, #AP11
+                          739333.24, 7103591.93, #AP12
+                          739655.91, 7103356.43, #AP13
+                          740219.06, 7102942.40, #AP14
+                          740336.28, 7102862.71, #AP15
+                          740573.81, 7102696.34, #AP16
+                          740542.70, 7102632.80, #AP17
+                          740625.53, 7102586.89, #MC03
+                          740752.53, 7102491.67, #AP18
+                          740702.96, 7102452.39, #AP19
+                          740761.10, 7102414.30),#MC01 
+                 byrow = TRUE, ncol = 2)
+#
+# 2. Criação da feição  
+#
+# Atentar para a definição do crs apropriado
+# 
+#
+# Exemplos:
+# WGS 84 = 4326
+# SAD 69 22S = 29192
+# SIRGAS 2000 22S = 31982
+#
+spl <- st_sfc(st_polygon(list(coords)), crs = 31982)
+#
+polUniao <- st_zm(st_read("../Poligonos_LPM_Homologada.geojson")) %>% 
+  st_transform(31982)
+#
+#
+# 3. Criação dos metadados  
+#
+attr <- data.frame(
+  destinacao = "ocupacao",
+  rip = NA,
+  interessado = "COAMO Agroindustrial Cooperativa",
+  area = st_area(spl),
+  area_uniao = st_area(st_intersection(spl, polUniao)),
+  nup = "10154.149569/2020-24",
+  concedida = FALSE)
+#
+# 4. União dos atributos à geometria
+#
+# Atentar para a definição do crs apropriado
+# 
+#
+# Exemplos:
+# WGS 84 = 4326
+# SAD 69 22S = 29192
+# SIRGAS 2000 22S = 31982
+#
+spl_df <- st_sf(attr,
+                geometry = spl, 
+                crs = 31982) %>% 
+  st_transform(4326)
+```
+
+```{r, include=FALSE}
+lpm_hom <- st_read("../linhas/LPM_HOMOLOGADA.geojson")
+lltm_hom <- st_read("../linhas/LLTM_HOMOLOGADA.geojson")
+lpm_dem <- st_read("../linhas/LPM_DEMARCADA.geojson")
+lltm_dem <- st_read("../linhas/LLTM_DEMARCADA.geojson")
+lpm_pres <- st_read("../linhas/LPM_PRESUMIDA.geojson")
+lltm_pres <- st_read("../linhas/LLTM_PRESUMIDA.geojson")
+certdisp <- st_read("../certdisp.geojson")
+cessoes <- st_read("../cessoes.geojson")
+portoSFS <- st_read("E:/cadastro-marinho/BrasilData/portos/sfs.geojson")
+```
+
+
+## IMAGEM
+
+```{r}
+ext <- extent(spl_df)
+m <- spl_df %>%
+  leaflet() %>%
+  #addTiles() %>%
+  addWMSTiles(baseUrl = "http://sigsc.sc.gov.br/sigserver/SIGSC/wms", 
+              layers = list("OrtoRGB-Landsat-2012")) %>%
+# addProviderTiles(providers$Esri.WorldImagery) %>%
+  addPolygons(stroke = TRUE, weight = 2,  dashArray = "10 10", 
+              color = "white", fillColor = "violet") %>%
+  addPolylines(data = lpm_hom, color = "blue") %>% 
+  addPolylines(data = lpm_dem, dashArray = "20 20", color = "blue") %>% 
+  addPolylines(data= lpm_pres, dashArray = "20 20", color = "blue", 
+               opacity = .2) %>% 
+  addPolylines(data = lltm_hom, color = "red") %>% 
+  addPolylines(data = lltm_dem, dashArray = "20 20", color = "red") %>% 
+  addPolylines(data = lltm_pres, dashArray = "20 20", color = "red", 
+               opacity = .2) %>% 
+  addPolygons(data = certdisp, dashArray = "10 10", 
+              color = "white", fillColor = "blue") %>% 
+  addPolygons(data = cessoes, color = "white", fillColor = "red") %>% 
+  addPolygons(data = portoSFS, color = "yellow") %>% 
+  # fitBounds(lng1 = ext[1], lat1 = ext[3], lng2 = ext[2], lat2 = ext[4]) %>% 
+  setView(lat = -26.18, lng = -48.59, zoom = 15) %>% 
+  addMouseCoordinates() %>%
+  addLogo("../SPU.jpg", src = "local", position = "bottomleft", 
+                  offset.x = 15, offset.y = 15, 
+                  width = 75, height = 75)
+#mapview::mapshot(m, file = "./coamo.png", remove_controls = NULL)
+knitr::include_graphics("coamo.png")
+```
+
+## SALVAR
+
+```{r}
+st_write(spl_df, "coamo.geojson", delete_dsn = TRUE)
+```
+

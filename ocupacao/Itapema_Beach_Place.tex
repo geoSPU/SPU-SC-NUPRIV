@@ -1,0 +1,158 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[ignorenonframetext,]{beamer}
+\IfFileExists{pgfpages.sty}{\usepackage{pgfpages}}{}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+\beamertemplatenavigationsymbolsempty
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+\fi
+\defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+
+
+
+
+
+
+
+\fi
+
+  \usetheme[]{metropolis}
+
+
+
+
+
+
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+  \usepackage{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+
+
+\newif\ifbibliography
+
+
+\hypersetup{
+      pdftitle={Inscrição de Ocupação},
+        pdfauthor={Luiz Fernando Palin Droubi},
+          pdfborder={0 0 0},
+    breaklinks=true}
+%\urlstyle{same}  % Use monospace font for urls
+
+
+
+
+
+
+
+% Prevent slide breaks in the middle of a paragraph:
+\widowpenalties 1 10000
+\raggedbottom
+
+  \AtBeginPart{
+    \let\insertpartnumber\relax
+    \let\partname\relax
+    \frame{\partpage}
+  }
+  \AtBeginSection{
+    \ifbibliography
+    \else
+      \let\insertsectionnumber\relax
+      \let\sectionname\relax
+      \frame{\sectionpage}
+    \fi
+  }
+  \AtBeginSubsection{
+    \let\insertsubsectionnumber\relax
+    \let\subsectionname\relax
+    \frame{\subsectionpage}
+  }
+
+
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+  \setcounter{secnumdepth}{0}
+
+
+  \usepackage[brazil]{babel} \usepackage{booktabs} \usepackage{longtable}
+
+  \title[]{Inscrição de Ocupação}
+
+  \subtitle{Itapema Beach Place\\
+04972.003387/2018-57}
+
+  \author[
+        Luiz Fernando Palin Droubi
+    ]{Luiz Fernando Palin Droubi}
+
+  \institute[
+    ]{
+    Superintendência do Patrimônio da União em Santa Catarina - SPU/SC
+    }
+
+\date[
+      \today
+  ]{
+      \today
+        }
+
+
+\begin{document}
+
+% Hide progress bar and footline on titlepage
+  \begin{frame}[plain]
+  \titlepage
+  \end{frame}
+
+
+
+\hypertarget{criar-objeto}{%
+\section{Criar objeto}\label{criar-objeto}}
+
+\hypertarget{imagem}{%
+\section{IMAGEM}\label{imagem}}
+
+\begin{frame}{IMAGEM}
+
+\includegraphics[width=13.78in]{itapema_beach_place}
+
+\end{frame}
+
+\hypertarget{salvar}{%
+\section{SALVAR}\label{salvar}}
+
+\begin{frame}[fragile]{SALVAR}
+
+\begin{verbatim}
+## Deleting source `itapema_beach_place.geojson' using driver `GeoJSON'
+## Writing layer `itapema_beach_place' to data source `itapema_beach_place.geojson' using driver `GeoJSON'
+## Writing 1 features with 7 fields and geometry type Polygon.
+\end{verbatim}
+
+\end{frame}
+
+
+
+
+\end{document}
